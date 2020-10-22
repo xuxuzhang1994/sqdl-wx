@@ -4,7 +4,7 @@
  */
 import { extend } from 'umi-request';
 import { notification, message } from 'antd';
-import { history } from 'umi'
+import { history } from 'umi';
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -56,47 +56,45 @@ const request = extend({
 
 // request拦截器, 改变url 或 options.
 request.interceptors.request.use(async (url, options) => {
-  console.log(process.env.NODE_ENV)
-  const baseUrl = process.env.NODE_ENV  == 'development' ? '/servers' : 'http://baoming.boxinyao.com'
+  console.log(process.env.NODE_ENV);
+  const baseUrl =
+    process.env.NODE_ENV == 'development'
+      ? '/servers'
+      : 'https://thethroneofgirl-pre-registration-api.smartplay.com.tw';
   if (/http[s]?:\/\/.*/.test(url)) {
-    url = url
-  }else{
-    url = baseUrl + url
+    url = url;
+  } else {
+    url = baseUrl + url;
   }
-  let token = localStorage.getItem("token");
+  let token = localStorage.getItem('token');
   if (token) {
     const headers = {
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'token': token
+      Accept: 'application/json',
+      token: token,
     };
-    return (
-      {
-        url: url,
-        options: { ...options, headers: headers },
-      }
-    );
+    return {
+      url: url,
+      options: { ...options, headers: headers },
+    };
   } else {
-    return (
-      {
-        url: url,
-        options: { ...options },
-      }
-    );
+    return {
+      url: url,
+      options: { ...options },
+    };
   }
-})
+});
 
 // response拦截器, 处理response
 request.interceptors.response.use(async (response, options) => {
   const data = await response.clone().json();
   if (data.msg == '用户信息不正确' || data.code == 101) {
-    message.warning('用户身份过期，请重新登录')
+    message.warning('用户身份过期，请重新登录');
     setTimeout(() => {
-      history.replace('/login')
-    },500)
+      history.replace('/login');
+    }, 500);
   }
   return response;
 });
-
 
 export default request;

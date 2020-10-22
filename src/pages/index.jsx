@@ -197,12 +197,16 @@ export default () => {
   const parseNumber = number => {
     const string = String(number);
     let list = [];
-    for (let i = 3; i < string.length; i = i + 3) {
-      const str = string.substring(i - 3, i);
-      list.push(str);
-      if (i >= string.length - 3) {
-        list.push(string.substring(i, string.length));
+    if (string.length > 3) {
+      for (let i = 3; i < string.length; i = i + 3) {
+        const str = string.substring(i - 3, i);
+        list.push(str);
+        if (i >= string.length - 3) {
+          list.push(string.substring(i, string.length));
+        }
       }
+    } else {
+      list.push(string);
     }
     // const list = number.
     console.log({ list });
@@ -234,8 +238,8 @@ export default () => {
     setTime(60);
     // reduceTime()
     request
-      .post('/api/sendCode', {
-        data: {
+      .get('/api/sendCode', {
+        params: {
           mobile: formData.phone,
           source: formData.source,
         },
@@ -256,7 +260,7 @@ export default () => {
       alert('請填寫手機號!');
       return;
     }
-    if (!formData.phone) {
+    if (!formData.code) {
       alert('請填寫驗證碼!');
       return;
     }
@@ -265,8 +269,8 @@ export default () => {
       return;
     }
     request
-      .post('/api/reg', {
-        data: {
+      .get('/api/reg', {
+        params: {
           uid: formData.share_id,
           mobile: formData.phone,
           code: formData.code,
@@ -407,14 +411,23 @@ export default () => {
             src={require('../images/kv/LOGO.png')}
             alt=""
           />
-          <img
-            onClick={() => setShowLoginModal(true)}
-            className={styles.yuyue}
-            src={require('../images/kv/yuyue.png')}
-            alt=""
-          />
+          {indexData.login_status == 0 ? (
+            <img
+              className={styles.yuyue}
+              src={require('../images/end.png')}
+              alt=""
+            />
+          ) : (
+            <img
+              onClick={() => setShowLoginModal(true)}
+              className={styles.yuyue}
+              src={require('../images/kv/yuyue.png')}
+              alt=""
+            />
+          )}
           <div className={styles.numbers}>
-            已有{indexData.number_text}位公主蒞臨米德加爾特大陸
+            已有<span></span>
+            {indexData.number_text}位公主蒞臨米德加爾特大陸
           </div>
           <div className={styles.download}>
             <a href="https://cutt.ly/BfTbRjb">
@@ -443,6 +456,17 @@ export default () => {
           src={require('../images/kv/BG.png')}
           alt=""
         />
+        <div className={styles.othder}>
+          <a
+            target="_blank"
+            href="https://www.youtube.com/channel/UC5j2wZ7N6xJ0cUv4O6gKf3Q"
+          >
+            <img src={require('../images/kv/youtobe.png')} alt="" />
+          </a>
+          <a target="_blank" href="https://www.facebook.com/TheThroneOfGirlTW/">
+            <img src={require('../images/kv/FB.png')} alt="" />
+          </a>
+        </div>
       </div>
       <div className={'swiper-slide ' + styles.slide2}>
         <img
@@ -455,7 +479,9 @@ export default () => {
         />
         <div className={styles.numbers}>
           <div className={styles.top}>已加入/per-registration</div>
-          <div className={styles.bottom}>{indexData.number_text}位公主</div>
+          <div className={styles.bottom}>
+            <span>{indexData.number_text}</span>位公主
+          </div>
         </div>
         <div className={styles.process}>
           <div
@@ -471,39 +497,47 @@ export default () => {
               setShowGift(true);
             }}
           >
-            {indexData.number > 300000 && (
+            {indexData.total > 300000 && (
               <img src={require('../images/02/yidacheng.png')} alt="" />
             )}
           </div>
           <div className={styles.item}>
-            {indexData.number > 200000 && (
-              <img src={require('../images/02/yidacheng.png')} alt="" />
+            {indexData.total > 200000 && (
+              <img src={require('../images/yidacheng.png')} alt="" />
             )}
           </div>
           <div className={styles.item}>
-            {indexData.number > 100000 && (
-              <img src={require('../images/02/yidacheng.png')} alt="" />
+            {indexData.total > 100000 && (
+              <img src={require('../images/yidacheng.png')} alt="" />
             )}
           </div>
         </div>
         <div className={styles.rightlist}>
           <div className={styles.item}>
-            {indexData.number > 150000 && (
-              <img src={require('../images/02/yidacheng.png')} alt="" />
+            {indexData.total > 150000 && (
+              <img src={require('../images/yidacheng.png')} alt="" />
             )}
           </div>
           <div className={styles.item}>
-            {indexData.number > 50000 && (
-              <img src={require('../images/02/yidacheng.png')} alt="" />
+            {indexData.total > 50000 && (
+              <img src={require('../images/yidacheng.png')} alt="" />
             )}
           </div>
         </div>
-        <img
-          onClick={() => setShowLoginModal(true)}
-          className={styles.yuyue}
-          src={require('../images/01/yuyue.png')}
-          alt=""
-        />
+        {indexData.share_status == 0 ? (
+          <img
+            className={styles.yuyue}
+            src={require('../images/end.png')}
+            alt=""
+          />
+        ) : (
+          <img
+            onClick={() => setShowLoginModal(true)}
+            className={styles.yuyue}
+            src={require('../images/01/yuyue.png')}
+            alt=""
+          />
+        )}
         <img
           className={styles.bg}
           src={require('../images/01/02.png')}
@@ -521,7 +555,9 @@ export default () => {
         />
         <div className={styles.numbers}>
           <div className={styles.top}>已召集/invitation</div>
-          <div className={styles.bottom}>{userInfo.number}位好友</div>
+          <div className={styles.bottom}>
+            <span>{userInfo.number}</span>位好友
+          </div>
         </div>
         <div className={styles.list}>
           {[0, 1, 2].map(item => (
@@ -541,18 +577,26 @@ export default () => {
             </div>
           ))}
         </div>
-        <img
-          onClick={() => {
-            if (!uid) {
-              setShowOtherLoginErrorModal(true);
-              return;
-            }
-            setShowCopyModal(true);
-          }}
-          className={styles.zj}
-          src={require('../images/02/zj.png')}
-          alt=""
-        />
+        {indexData.login_status == 0 ? (
+          <img
+            className={styles.zj}
+            src={require('../images/end.png')}
+            alt=""
+          />
+        ) : (
+          <img
+            onClick={() => {
+              if (!uid) {
+                setShowOtherLoginErrorModal(true);
+                return;
+              }
+              setShowCopyModal(true);
+            }}
+            className={styles.zj}
+            src={require('../images/02/zj.png')}
+            alt=""
+          />
+        )}
         <img
           className={styles.bg}
           src={require('../images/02/bg.png')}
@@ -861,7 +905,10 @@ export default () => {
               onClick={() => setShowGift(false)}
               src={require('../images/01/close.png')}
             />
-            <video autoPlay src={`./${videoIndex + 1}.mp4`}></video>
+            <div className={styles.videobox}>
+              {videoIndex == 2 && <video loop autoPlay src={`./1.mp4`}></video>}
+              <video autoPlay loop src={`./${videoIndex + 1}.mp4`}></video>
+            </div>
           </div>
         </div>
       )}
@@ -891,10 +938,10 @@ export default () => {
 };
 
 function copyToClipboard(text) {
-  if (text.indexOf('-') !== -1) {
-    let arr = text.split('-');
-    text = arr[0] + arr[1];
-  }
+  // if (text.indexOf('-') !== -1) {
+  //   let arr = text.split('-');
+  //   text = arr[0] + arr[1];
+  // }
   var textArea = document.createElement('textarea');
   textArea.style.position = 'fixed';
   textArea.style.top = '0';
